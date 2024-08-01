@@ -1,63 +1,48 @@
 //CONTROLE DE ACESSO DOS DADOS
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-} from '@nestjs/common';
-import { Produto } from '../entities/produto.entity';
-import { ProdutoService } from '../services/produto.services';
+import { Controller, Get, Post, Put, Delete, HttpCode, HttpStatus, Param, Body, HttpException, UseGuards, ParseIntPipe } from "@nestjs/common";
+import { JwtAuthGuard } from "../../auth/guard/jwt-auth.guard";
+import { Produto } from "../entities/produto.entity";
+import { ProdutoService } from "../services/produto.services";
 
-@Controller('/produto')
+@UseGuards(JwtAuthGuard)
+@Controller("/produtos")
 export class ProdutoController {
-  constructor(private readonly produtoService: ProdutoService) {}
+  constructor(private readonly ProdutoService: ProdutoService) { }
 
-//decorator
   @Get()
   @HttpCode(HttpStatus.OK)
   findAll(): Promise<Produto[]> {
-    return this.produtoService.findAll();
+    return this.ProdutoService.findAll();
   }
 
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   findById(@Param('id', ParseIntPipe) id: number): Promise<Produto> {
-    return this.produtoService.findById(id);
+    return this.ProdutoService.findById(id);
   }
 
-  @Get('/nome/:nome')
+  @Get('/titulo/:titulo')
   @HttpCode(HttpStatus.OK)
-  findByTitulo(@Param('nome') nome: string): Promise<Produto[]> {
-    return this.produtoService.findByTitulo(nome);
-  }
-
-  @Get('/console/:console')
-  @HttpCode(HttpStatus.OK)
-  findByConsole(@Param('console') console: string): Promise<Produto[]> {
-    return this.produtoService.findByConsole(console);
+  findByTitulo(@Param('titulo') titulo: string): Promise<Produto[]> {
+    return this.ProdutoService.findByTitulo(titulo);
   }
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() produto: Produto): Promise<Produto> {
-    return this.produtoService.create(produto);
+  create(@Body() Produto: Produto): Promise<Produto> {
+    return this.ProdutoService.create(Produto);
   }
 
   @Put()
   @HttpCode(HttpStatus.OK)
-  update(@Body() produto: Produto): Promise<Produto> {
-    return this.produtoService.update(produto);
+  update(@Body() Produto: Produto): Promise<Produto> {
+    return this.ProdutoService.update(Produto);
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.produtoService.delete(id);
+  delete(@Param('id', ParseIntPipe) id: number){
+    return this.ProdutoService.delete(id);
   }
+
 }
